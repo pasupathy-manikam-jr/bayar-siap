@@ -52,7 +52,7 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] FCM HTTP v1 push (`FCM_CREDENTIALS` = service-account JSON; free), drops uninstalled-app tokens; both default to the log driver
 - [ ] Credentials: Twilio account (trial texts only verified numbers) and a Firebase project — yours to create
 
-## Phase 3b — Staging deploy (prepared, not deployed)
+## Phase 3b — Staging deploy
 
 - [x] Subfolder build: `basePath()` Vite plugin (from lms-mentor), `APP_PATH_PREFIX=bayar-siap npm run build`
 - [x] `.github/workflows/deploy-assets.yml` (builds + publishes `deploy` branch) and `scripts/deploy.sh` (server: reset to
@@ -60,8 +60,9 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] Scheduler drains the queue every minute (`queue:work --stop-when-empty`), since cPanel has no supervisor
 - [x] Verified locally under a real `/bayar-siap` subfolder: contractor pages, signed photo URLs, PDF, client OTP + cookie
       path, approve, API pre-signed upload; workflow steps run from a clean copy
-- [ ] Needs git + a GitHub repo, then on staging: DB via `uapi`, `~/bayar-siap` clone on `deploy`, `.env`, symlink
-      `~/ui.staging.oriclabdev.com/public/bayar-siap`, cron `schedule:run`
+- [x] Git + public repo https://github.com/pasupathy-manikam-jr/bayar-siap (CI and deploy-branch workflows green)
+- [x] Staging live at https://ui.staging.oriclabdev.com/bayar-siap: DB `stagingoriclabde_bayarsiap`, read-only deploy key
+      `~/.ssh/github_bayar_siap`, `.env` per scripts/deploy.sh header, symlink, per-minute `schedule:run` cron, demo data seeded
 
 ## Phase 3c — Spec gaps found in the audit (13 Oct)
 
