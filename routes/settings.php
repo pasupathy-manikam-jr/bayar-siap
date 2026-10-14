@@ -1,0 +1,48 @@
+<?php
+
+use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\CompanyController;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\SecurityController;
+/* @chisel-password-confirmation */
+use Illuminate\Auth\Middleware\RequirePassword;
+/* @end-chisel-password-confirmation */
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth'])->group(function () {
+    // Not Route::redirect(): its root-relative Location escapes a subfolder install (staging).
+    Route::get('settings', fn () => to_route('profile.edit'));
+
+    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('settings/company', [CompanyController::class, 'edit'])->name('company.edit');
+    Route::post('settings/company', [CompanyController::class, 'update'])->name('company.update');
+
+    Route::post('settings/billing/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
+    Route::get('settings/billing/success', [BillingController::class, 'success'])->name('billing.success');
+    Route::post('settings/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('settings/security', [SecurityController::class, 'edit'])
+        /* @chisel-password-confirmation */
+        ->middleware(RequirePassword::class)
+        /* @end-chisel-password-confirmation */
+        ->name('security.edit');
+
+    Route::put('settings/password', [SecurityController::class, 'update'])
+        ->middleware('throttle:6,1')
+        ->name('user-password.update');
+
+    Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+});
+
+/* @chisel-passkeys */
+Route::get('.well-known/passkey-endpoints', function () {
+    return response()->json([
+        'enroll' => route('security.edit'),
+        'manage' => route('security.edit'),
+    ]);
+})->name('well-known.passkeys');
+/* @end-chisel-passkeys */
