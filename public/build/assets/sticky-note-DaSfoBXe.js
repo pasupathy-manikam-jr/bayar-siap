@@ -1,0 +1,1 @@
+import{t as e}from"./createLucideIcon-dKQMnqMN.js";var t=e(`Clock`,[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`polyline`,{points:`12 6 12 12 16 14`,key:`68esgv`}]]),n=e(`StickyNote`,[[`path`,{d:`M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z`,key:`qazsjp`}],[`path`,{d:`M15 3v4a2 2 0 0 0 2 2h4`,key:`40519r`}]]);export{t as n,n as t};
