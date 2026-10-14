@@ -1,0 +1,164 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    /* Barlow grew out of highway signage: legible and plainly technical. Condensed for headings and money. */
+    --font-sans:
+        'Barlow', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
+
+    --color-status-waiting: var(--status-waiting);
+    --color-status-done: var(--status-done);
+    --color-status-active: var(--status-active);
+    --color-status-problem: var(--status-problem);
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    /* Site palette: hi-vis signal yellow, bitumen ink, concrete greys. */
+    --background: oklch(0.948 0.005 255);
+    --foreground: oklch(0.235 0.015 255);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.235 0.015 255);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.235 0.015 255);
+    --primary: oklch(0.84 0.17 90);
+    --primary-foreground: oklch(0.235 0.015 255);
+    --secondary: oklch(0.92 0.006 255);
+    --secondary-foreground: oklch(0.235 0.015 255);
+    --muted: oklch(0.92 0.006 255);
+    --muted-foreground: oklch(0.5 0.015 255);
+    --accent: oklch(0.95 0.045 95);
+    --accent-foreground: oklch(0.235 0.015 255);
+    --destructive: oklch(0.56 0.21 27);
+    --destructive-foreground: oklch(0.56 0.21 27);
+    --border: oklch(0.905 0.006 255);
+    --input: oklch(0.88 0.008 255);
+    --ring: oklch(0.72 0.16 85);
+    --chart-1: oklch(0.84 0.17 90);
+    --chart-2: oklch(0.235 0.015 255);
+    --chart-3: oklch(0.55 0.13 250);
+    --chart-4: oklch(0.55 0.13 150);
+    --chart-5: oklch(0.62 0.15 65);
+    --radius: 0.375rem;
+    --sidebar: oklch(0.235 0.015 255);
+    --sidebar-foreground: oklch(0.88 0.008 255);
+    --sidebar-primary: oklch(0.84 0.17 90);
+    --sidebar-primary-foreground: oklch(0.235 0.015 255);
+    --sidebar-accent: oklch(0.3 0.017 255);
+    --sidebar-accent-foreground: oklch(0.98 0.003 255);
+    --sidebar-border: oklch(0.32 0.017 255);
+    --sidebar-ring: oklch(0.84 0.17 90);
+    --status-waiting: oklch(0.6 0.15 60);
+    --status-done: oklch(0.52 0.13 150);
+    --status-active: oklch(0.52 0.14 250);
+    --status-problem: oklch(0.56 0.21 27);
+}
+
+.dark {
+    --background: oklch(0.19 0.012 255);
+    --foreground: oklch(0.95 0.004 255);
+    --card: oklch(0.235 0.015 255);
+    --card-foreground: oklch(0.95 0.004 255);
+    --popover: oklch(0.235 0.015 255);
+    --popover-foreground: oklch(0.95 0.004 255);
+    --primary: oklch(0.84 0.17 90);
+    --primary-foreground: oklch(0.2 0.015 255);
+    --secondary: oklch(0.29 0.016 255);
+    --secondary-foreground: oklch(0.95 0.004 255);
+    --muted: oklch(0.29 0.016 255);
+    --muted-foreground: oklch(0.72 0.01 255);
+    --accent: oklch(0.32 0.03 90);
+    --accent-foreground: oklch(0.95 0.004 255);
+    --destructive: oklch(0.45 0.16 27);
+    --destructive-foreground: oklch(0.7 0.18 27);
+    --border: oklch(0.32 0.016 255);
+    --input: oklch(0.36 0.016 255);
+    --ring: oklch(0.72 0.16 85);
+    --chart-1: oklch(0.84 0.17 90);
+    --chart-2: oklch(0.95 0.004 255);
+    --chart-3: oklch(0.7 0.13 250);
+    --chart-4: oklch(0.72 0.14 150);
+    --chart-5: oklch(0.75 0.14 65);
+    --sidebar: oklch(0.155 0.01 255);
+    --sidebar-foreground: oklch(0.88 0.008 255);
+    --sidebar-primary: oklch(0.84 0.17 90);
+    --sidebar-primary-foreground: oklch(0.2 0.015 255);
+    --sidebar-accent: oklch(0.26 0.015 255);
+    --sidebar-accent-foreground: oklch(0.98 0.003 255);
+    --sidebar-border: oklch(0.27 0.015 255);
+    --sidebar-ring: oklch(0.84 0.17 90);
+    --status-waiting: oklch(0.78 0.14 70);
+    --status-done: oklch(0.74 0.15 150);
+    --status-active: oklch(0.74 0.12 250);
+    --status-problem: oklch(0.72 0.17 27);
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    h1,
+    h2 {
+        font-family: var(--font-display);
+        letter-spacing: 0.005em;
+    }
+}
