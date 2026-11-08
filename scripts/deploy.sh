@@ -11,6 +11,8 @@
 #   SESSION_COOKIE=bayar_siap_session
 #   QUEUE_CONNECTION=database   (cron: * * * * * cd ~/bayar-siap && php artisan schedule:run)
 #   DEMO_LOGINS=false
+#   BROADCAST_CONNECTION=reverb  (live updates, shared server ~/reverb-hub; REVERB_APP_ID/KEY/SECRET from
+#   `php artisan reverb:add-app bayar-siap` there, REVERB_HOST=ui.staging.oriclabdev.com, REVERB_PORT=443, REVERB_SCHEME=https)
 #
 # Pulls the CI-built `deploy` branch (main + compiled public/build, see
 # .github/workflows/deploy-assets.yml), migrates and refreshes caches.

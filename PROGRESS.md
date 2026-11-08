@@ -97,7 +97,11 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] `POST /payment-requests/{id}/approve-verbally`; comment threads in job (VOs) and milestone responses, same shape as web
       (no raw client records); `POST /company` for multipart logo upload
 - [x] API docs (Scramble, dev dependency): `/docs/api` and `/docs/api.json`, open locally and on staging
-- [ ] Live updates while the app is open (Laravel Reverb) — needs a host that runs long-lived processes (not cPanel)
+- [x] Live updates while the app is open: `ContractorAlert` also broadcasts (event `notification`, same shape as a
+      `GET /notifications` item) on `private-App.Models.User.{id}` via the shared Reverb server
+      ([reverb-hub](https://github.com/pasupathy-manikam-jr/reverb-hub), staging `wss://ui.staging.oriclabdev.com`).
+      Channel signing: web `/broadcasting/auth` (session), phones `POST /api/v1/broadcasting/auth` (Sanctum token).
+      Web: toast + sidebar badge refresh. Closed apps still poll; no Firebase
 
 ## Phase 4 — Android app (Kotlin, Compose) — spec weeks 4–7
 

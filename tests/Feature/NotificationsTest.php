@@ -8,9 +8,13 @@ use App\Models\User;
 use App\Notifications\ClientAlert;
 use App\Notifications\ContractorAlert;
 use App\Services\JobFlow;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\Events\BroadcastNotificationCreated;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class NotificationsTest extends TestCase
@@ -128,5 +132,42 @@ class NotificationsTest extends TestCase
         $this->assertSame('approved', $milestone->refresh()->status);
         Notification::assertSentTo($job->client, ClientAlert::class, fn (ClientAlert $alert) => str_contains($alert->text(), 'approved by you verbally'));
         Notification::assertNotSentTo($this->owner, ContractorAlert::class);
+    }
+
+    public function test_contractor_alerts_are_broadcast_live_on_the_owners_private_channel(): void
+    {
+        Event::fake([BroadcastNotificationCreated::class]);
+        $job = $this->activeJob();
+
+        $this->owner->notify(new ContractorAlert(':number signed', ':client signed :number on “:job”.',
+            ['number' => 'VO-1', 'client' => 'Puan Siti', 'job' => 'Kitchen'], route('jobs.show', $job), $job->id, ['type' => 'job', 'id' => $job->id]));
+
+        Event::assertDispatched(BroadcastNotificationCreated::class, function (BroadcastNotificationCreated $event) use ($job) {
+            $payload = $event->broadcastWith();
+
+            return $event->broadcastAs() === 'notification'
+                && $event->broadcastOn() == [new PrivateChannel('App.Models.User.'.$this->owner->id)]
+                && $payload['title'] === 'VO-1 signed'
+                && $payload['body'] === 'Puan Siti signed VO-1 on “Kitchen”.'
+                && $payload['target'] === ['type' => 'job', 'id' => $job->id]
+                && $payload['unread'] === true
+                && is_string($payload['id']);
+        });
+    }
+
+    public function test_the_app_can_only_join_its_own_live_channel(): void
+    {
+        config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb.key' => 'test-key',
+            'broadcasting.connections.reverb.secret' => 'test-secret', 'broadcasting.connections.reverb.app_id' => '1']);
+        require base_path('routes/channels.php'); // channels register on the driver active at boot (null in tests)
+        $other = User::factory()->create();
+        $auth = fn (User $user) => $this->postJson('/api/v1/broadcasting/auth', ['socket_id' => '1234.5678', 'channel_name' => 'private-App.Models.User.'.$user->id]);
+
+        $this->postJson('/api/v1/broadcasting/auth', ['socket_id' => '1234.5678', 'channel_name' => 'private-App.Models.User.'.$this->owner->id])->assertUnauthorized();
+
+        Sanctum::actingAs($this->owner);
+        $signature = hash_hmac('sha256', '1234.5678:private-App.Models.User.'.$this->owner->id, 'test-secret');
+        $auth($this->owner)->assertOk()->assertJson(['auth' => 'test-key:'.$signature]);
+        $auth($other)->assertForbidden();
     }
 }

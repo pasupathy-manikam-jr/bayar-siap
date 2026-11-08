@@ -16,11 +16,13 @@ import { dashboard, guide, notifications } from '@/routes';
 import { edit as editCompany } from '@/routes/company';
 import { index as jobsIndex } from '@/routes/jobs';
 import type { NavItem } from '@/types';
+import { useLiveNotifications } from '@/hooks/use-live-notifications';
 import { useTranslation } from '@/hooks/use-translation';
 
 export function AppSidebar() {
-    const { unreadNotifications } = usePage().props;
+    const { unreadNotifications, auth } = usePage().props;
     const { t } = useTranslation();
+    useLiveNotifications(auth.user?.id);
 
     const navItems: NavItem[] = [
         {

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\MoneyController;
+use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -21,6 +22,8 @@ Route::prefix('v1')->group(function () {
         Route::match(['put', 'post'], 'company', [AuthController::class, 'updateCompany']);
         Route::get('notifications', [AuthController::class, 'notifications']);
         Route::post('notifications/read', [AuthController::class, 'markNotificationsRead']);
+        // Signs the app's subscription to its private channel (private-App.Models.User.{id}) on the Reverb server.
+        Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate']);
         Route::post('billing/{action}', [AuthController::class, 'billing'])->whereIn('action', ['checkout', 'portal']);
 
         Route::get('clients', [JobController::class, 'clients']);

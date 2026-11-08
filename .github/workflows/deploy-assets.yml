@@ -44,6 +44,11 @@ jobs:
           php artisan key:generate
           sed -i '/^VITE_APP_NAME=/d' .env
           echo 'VITE_APP_NAME="JobProof"' >> .env
+          # Live updates via the shared Reverb server on staging. The key is public (it ships in every
+          # browser bundle); the secret only lives in the server's .env.
+          sed -i '/^VITE_REVERB_/d' .env
+          printf '%s\n' VITE_REVERB_APP_KEY=cht2uwjpiutov5cnldq9 VITE_REVERB_HOST=ui.staging.oriclabdev.com \
+            VITE_REVERB_PORT=443 VITE_REVERB_SCHEME=https >> .env
 
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

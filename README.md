@@ -11,7 +11,7 @@ Staging: https://ui.staging.oriclabdev.com/bayar-siap
 - **REST API** (`/api/v1`, Sanctum) for the mobile apps, including pre-signed photo uploads with offline-safe retries. Docs: [staging /docs/api](https://ui.staging.oriclabdev.com/bayar-siap/docs/api) (OpenAPI at `/docs/api.json`).
 - **Job record PDF** with milestones, photos, hashes, variation orders, payments and the full audit trail.
 - **English, Bahasa Melayu and 中文** for the interface, texts, emails and the PDF; each person's choice is saved.
-- **Notifications**: client SMS or WhatsApp (Twilio) and email; contractor notification list (the mobile apps poll it); daily reminders.
+- **Notifications**: client SMS or WhatsApp (Twilio) and email; contractor notification list, live while the web or mobile app is open (Laravel Reverb), polled by the mobile apps otherwise; daily reminders.
 - **Plans**: Free (1 active job, 5 GB) and Solo (10 jobs, 50 GB, RM 49/month through Stripe).
 
 **Coming soon: Android and iOS apps.** Native apps for contractors are on the way, with an in-app camera that stamps time and GPS, an offline upload queue for sites with weak signal, and notifications. They use the same API as the web app; clients keep using the link and never need to install anything.
