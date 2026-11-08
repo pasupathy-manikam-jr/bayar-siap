@@ -17,8 +17,8 @@ Route::prefix('v1')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::put('me/locale', [AuthController::class, 'updateLocale']);
-        Route::put('company', [AuthController::class, 'updateCompany']);
-        Route::post('company', [AuthController::class, 'updateCompany']); // multipart (logo upload)
+        // POST too: PHP only parses multipart (the logo upload) on POST.
+        Route::match(['put', 'post'], 'company', [AuthController::class, 'updateCompany']);
         Route::get('notifications', [AuthController::class, 'notifications']);
         Route::post('notifications/read', [AuthController::class, 'markNotificationsRead']);
         Route::post('billing/{action}', [AuthController::class, 'billing'])->whereIn('action', ['checkout', 'portal']);

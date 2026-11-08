@@ -1,7 +1,6 @@
 <?php
 
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
-use Dedoc\Scramble\OpenApiVersion;
 
 return [
     /*
@@ -45,7 +44,7 @@ return [
     /*
      * OpenAPI version of the resulting document.
      */
-    'openapi_version' => OpenApiVersion::V3_1,
+    // openapi_version: Scramble's default (3.1). Not set here: this config must load without Scramble (no-dev installs).
 
     'info' => [
         /*
