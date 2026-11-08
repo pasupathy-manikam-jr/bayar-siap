@@ -1,0 +1,1 @@
+import{i as e,s as t}from"./wayfinder-hKtcEfS5.js";var n=t();function r({message:t,className:r=``,...i}){return t?(0,n.jsx)(`p`,{...i,className:e(`text-sm text-destructive`,r),children:t}):null}export{r as t};
