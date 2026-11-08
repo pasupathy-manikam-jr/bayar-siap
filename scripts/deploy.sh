@@ -9,7 +9,8 @@
 #   ASSET_URL=https://ui.staging.oriclabdev.com/bayar-siap
 #   SESSION_PATH=/bayar-siap
 #   SESSION_COOKIE=bayar_siap_session
-#   QUEUE_CONNECTION=database   (cron: * * * * * cd ~/bayar-siap && php artisan schedule:run)
+#   QUEUE_CONNECTION=database   (worker: systemd `bayar-siap-queue`, root-owned; queue:restart below makes it
+#   reload new code. Fallback: cron * * * * * cd ~/bayar-siap && php artisan schedule:run drains it every minute)
 #   DEMO_LOGINS=false
 #   BROADCAST_CONNECTION=reverb  (live updates, shared server ~/reverb-hub; REVERB_APP_ID/KEY/SECRET from
 #   `php artisan reverb:add-app bayar-siap` there, REVERB_HOST=ui.staging.oriclabdev.com, REVERB_PORT=443, REVERB_SCHEME=https)

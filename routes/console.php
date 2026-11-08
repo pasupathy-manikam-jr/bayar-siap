@@ -10,7 +10,8 @@ Artisan::command('inspire', function () {
 
 Schedule::command('jobproof:reminders')->dailyAt('09:00')->timezone('Asia/Kuala_Lumpur');
 
-// Shared hosting (staging) has no process supervisor: cron runs the scheduler every minute, which drains the queue.
+// Staging runs a systemd worker (bayar-siap-queue, so live notifications go out in ~1 s); this per-minute drain from
+// cron is the fallback if that worker is down.
 // Production runs Horizon on Redis instead, so this only applies to the database queue.
 Schedule::command('queue:work --stop-when-empty --max-time=50')->everyMinute()->withoutOverlapping()
     ->when(fn () => config('queue.default') === 'database');

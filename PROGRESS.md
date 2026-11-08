@@ -57,7 +57,8 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] Subfolder build: `basePath()` Vite plugin (from lms-mentor), `APP_PATH_PREFIX=bayar-siap npm run build`
 - [x] `.github/workflows/deploy-assets.yml` (builds + publishes `deploy` branch) and `scripts/deploy.sh` (server: reset to
       origin/deploy, composer, migrate, caches, `queue:restart`; header lists the server `.env` keys)
-- [x] Scheduler drains the queue every minute (`queue:work --stop-when-empty`), since cPanel has no supervisor
+- [x] Scheduler drains the queue every minute (`queue:work --stop-when-empty`) as a fallback; staging also runs a
+      systemd worker `bayar-siap-queue` (`/etc/systemd/system/bayar-siap-queue.service`, as stagingoriclabde), ~1 s delivery
 - [x] Verified locally under a real `/bayar-siap` subfolder: contractor pages, signed photo URLs, PDF, client OTP + cookie
       path, approve, API pre-signed upload; workflow steps run from a clean copy
 - [x] Git + public repo https://github.com/pasupathy-manikam-jr/bayar-siap (CI and deploy-branch workflows green)
