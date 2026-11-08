@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property int $id
  * @property int $milestone_id
+ * @property string|null $client_uuid
  * @property int $uploaded_by
  * @property string $type
  * @property string|null $path

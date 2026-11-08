@@ -16,8 +16,11 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::put('me/locale', [AuthController::class, 'updateLocale']);
         Route::put('company', [AuthController::class, 'updateCompany']);
+        Route::post('company', [AuthController::class, 'updateCompany']); // multipart (logo upload)
         Route::get('notifications', [AuthController::class, 'notifications']);
+        Route::post('notifications/read', [AuthController::class, 'markNotificationsRead']);
         Route::post('billing/{action}', [AuthController::class, 'billing'])->whereIn('action', ['checkout', 'portal']);
 
         Route::get('clients', [JobController::class, 'clients']);
@@ -42,6 +45,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('proofs/{proof}', [MilestoneController::class, 'destroyProof']);
         Route::post('milestones/{milestone}/payment-requests', [MilestoneController::class, 'requestPayment']);
         Route::post('payment-requests/{paymentRequest}/withdraw', [MilestoneController::class, 'withdraw']);
+        Route::post('payment-requests/{paymentRequest}/approve-verbally', [MilestoneController::class, 'approveVerbally']);
 
         Route::post('jobs/{job}/variation-orders', [MoneyController::class, 'storeVariationOrder']);
         Route::post('variation-orders/{variationOrder}/send', [MoneyController::class, 'sendVariationOrder']);

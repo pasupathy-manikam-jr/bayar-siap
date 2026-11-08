@@ -28,6 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Stripe posts webhooks without a CSRF token; Cashier verifies its signature instead.
         $middleware->validateCsrfTokens(except: ['stripe/*']);
 
+        $middleware->api(append: [SetLocale::class]);
+
         $middleware->web(append: [
             SetLocale::class,
             HandleAppearance::class,

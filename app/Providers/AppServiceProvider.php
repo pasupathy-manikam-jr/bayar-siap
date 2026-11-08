@@ -4,12 +4,17 @@ namespace App\Providers;
 
 use App\Contracts\SmsSender;
 use App\Models\Company;
+use App\Models\User;
 use App\Services\LogSmsSender;
 use App\Services\TwilioSmsSender;
 use Carbon\CarbonImmutable;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Cashier\Cashier;
@@ -34,6 +39,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // The company (tenant) is the Stripe customer, not the user.
         Cashier::useCustomerModel(Company::class);
+        // API docs at /docs/api (Scramble, a dev dependency): open locally and on staging, with bearer-token auth.
+        if (class_exists(Scramble::class)) {
+            Gate::define('viewApiDocs', fn (?User $user = null) => app()->environment(['local', 'staging']));
+            Scramble::afterOpenApiGenerated(fn (OpenApi $openApi) => $openApi->secure(SecurityScheme::http('bearer')));
+        }
+
         Event::listen(function (WebhookHandled $event) {
             $customer = $event->payload['data']['object']['customer'] ?? null;
             if (str_starts_with((string) ($event->payload['type'] ?? ''), 'customer.subscription.') && is_string($customer)) {

@@ -32,12 +32,6 @@ return [
         'channel' => env('TWILIO_CHANNEL', 'sms'),
     ],
 
-    // Firebase Cloud Messaging (push to the contractor app). Path to the service-account JSON from the
-    // Firebase console; unset = pushes are written to the log instead.
-    'fcm' => [
-        'credentials' => env('FCM_CREDENTIALS'),
-    ],
-
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

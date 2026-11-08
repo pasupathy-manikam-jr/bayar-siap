@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\User;
+use App\Support\Translations;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -59,6 +62,15 @@ class AuthController extends Controller
         return $this->tokenResponse($user, $data['device_name'] ?? 'app');
     }
 
+    /** The app's language choice; also used for this contractor's pushes and emails. */
+    public function updateLocale(Request $request): User
+    {
+        $data = $request->validate(['locale' => ['required', Rule::in(Translations::locales())]]);
+        $request->user()->update(['locale' => $data['locale']]);
+
+        return $request->user()->load('company');
+    }
+
     /** Emails the reset link; the link opens the web reset page. Same answer whether or not the email exists. */
     public function forgotPassword(Request $request): JsonResponse
     {
@@ -68,17 +80,42 @@ class AuthController extends Controller
         return response()->json(['message' => __('If that email has an account, a reset link is on its way.')]);
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * The contractor's notifications, newest first. Reading never marks them read, so the app can poll in the
+     * background: ?since=<ISO time> returns only newer ones. Mark read explicitly with markNotificationsRead().
+     *
+     * @return array<string, mixed>
+     */
     public function notifications(Request $request): array
     {
-        $user = $request->user();
-        $page = $user->notifications()->paginate(30);
-        $user->unreadNotifications()->whereIn('id', $page->getCollection()->pluck('id'))->update(['read_at' => now()]);
+        $data = $request->validate(['since' => ['nullable', 'date']]);
+        $page = $request->user()->notifications()
+            ->when($data['since'] ?? null, fn ($q, $since) => $q->where('created_at', '>', Carbon::parse($since)))
+            ->paginate(30);
 
         return [
-            'data' => $page->getCollection()->map(fn (DatabaseNotification $n) => ['id' => $n->id, ...$n->data, 'title' => __((string) ($n->data['title'] ?? ''), (array) ($n->data['replace'] ?? [])), 'body' => __((string) ($n->data['body'] ?? ''), (array) ($n->data['replace'] ?? [])), 'unread' => $n->read_at === null, 'created_at' => $n->created_at?->toIso8601String()]),
+            'data' => $page->getCollection()->map(fn (DatabaseNotification $n) => [
+                'id' => $n->id,
+                ...$n->data,
+                'title' => __((string) ($n->data['title'] ?? ''), (array) ($n->data['replace'] ?? [])),
+                'body' => __((string) ($n->data['body'] ?? ''), (array) ($n->data['replace'] ?? [])),
+                'unread' => $n->read_at === null,
+                'created_at' => $n->created_at?->toIso8601String(),
+            ]),
+            'unread_count' => $request->user()->unreadNotifications()->count(),
             'next_page' => $page->hasMorePages() ? $page->currentPage() + 1 : null,
         ];
+    }
+
+    /** Mark the given notifications read, or all of them when no ids are sent. */
+    public function markNotificationsRead(Request $request): Response
+    {
+        $data = $request->validate(['ids' => ['nullable', 'array', 'max:100'], 'ids.*' => ['string']]);
+        $request->user()->unreadNotifications()
+            ->when($data['ids'] ?? null, fn ($q, $ids) => $q->whereIn('id', $ids))
+            ->update(['read_at' => now()]);
+
+        return response()->noContent();
     }
 
     /** Stripe Checkout / billing portal URL for the app to open in a browser. */

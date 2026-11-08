@@ -49,8 +49,8 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] Notifications: `JobNotifier` hooked on `JobFlow::log()` (audit action = spec event). Client: SMS + mail if on file, deep links. Contractor: database + push (log driver), Notifications page with sidebar badge
 - [x] `jobproof:reminders` daily 09:00 MYT: milestone due in 3 days → contractor; client nudged after 48h waiting, max once per 48h per job (logged as `client.reminded`)
 - [x] Twilio SMS/WhatsApp (`SMS_DRIVER=twilio`, `TWILIO_CHANNEL=sms|whatsapp`, local numbers → E.164); OTP shows a retry message if the gateway fails
-- [x] FCM HTTP v1 push (`FCM_CREDENTIALS` = service-account JSON; free), drops uninstalled-app tokens; both default to the log driver
-- [ ] Credentials: Twilio account (trial texts only verified numbers) and a Firebase project — yours to create
+- [x] ~~FCM push~~ removed (Nov 8): no Firebase (Google Cloud billing). Mobile apps poll `GET /notifications?since=` instead
+- [ ] Credentials: Twilio account (trial texts only verified numbers) — yours to create
 
 ## Phase 3b — Staging deploy
 
@@ -87,6 +87,17 @@ Source of truth: `SPEC.md`. Laravel app at repo root (fits the staging subfolder
 - [x] `scripts/i18n-keys.php` + LocaleTest: every UI key must exist in lang/ms.json and lang/zh.json (CI fails otherwise)
 - [x] Demo data: Bina Jaya with 5 jobs in every state; real site photos (Wikimedia Commons, CC0/PD/CC BY(-SA), credits in database/seeders/photos/credits.json) and company logos
 - [x] Job record PDF in EN / BM / 中文 (follows the downloader's language); Chinese uses Noto Sans SC (resources/fonts, OFL) with font subsetting (~12 KB added per PDF); activity labels now come from `ActivityLog::LABELS` (one list for feeds + PDF)
+
+## Phase 3e — API ready for the mobile apps (8 Nov)
+
+- [x] API answers in the user's language (saved via `PUT /me/locale`, else the phone's `Accept-Language`)
+- [x] Offline-safe proofs: `client_uuid` per photo; a retry returns the existing proof (200) and deletes a re-uploaded copy
+- [x] Notifications carry a target (`job` / `milestone` / `variation_order` / `payment` + id) for deep links
+- [x] Polling: `GET /notifications?since=` never marks read; `POST /notifications/read`; `unread_count` in the response
+- [x] `POST /payment-requests/{id}/approve-verbally`; comment threads in job (VOs) and milestone responses, same shape as web
+      (no raw client records); `POST /company` for multipart logo upload
+- [x] API docs (Scramble, dev dependency): `/docs/api` and `/docs/api.json`, open locally and on staging
+- [ ] Live updates while the app is open (Laravel Reverb) — needs a host that runs long-lived processes (not cPanel)
 
 ## Phase 4 — Android app (Kotlin, Compose) — spec weeks 4–7
 

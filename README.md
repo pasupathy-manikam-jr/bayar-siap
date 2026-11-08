@@ -8,13 +8,13 @@ Staging: https://ui.staging.oriclabdev.com/bayar-siap
 
 - **Contractor web app**: dashboard, jobs with milestone templates, photo proof (SHA-256 fingerprints, EXIF time and GPS, thumbnails), payment requests, variation orders, payments, comments, cancellation, notifications, company settings and billing.
 - **Client link**: no account or app; the client verifies with a 6-digit SMS code, then accepts the job, approves or rejects payment requests with a reason, signs variation orders, and confirms or disputes payments.
-- **REST API** (`/api/v1`, Sanctum) for the mobile apps, including pre-signed photo uploads.
+- **REST API** (`/api/v1`, Sanctum) for the mobile apps, including pre-signed photo uploads with offline-safe retries. Docs: [staging /docs/api](https://ui.staging.oriclabdev.com/bayar-siap/docs/api) (OpenAPI at `/docs/api.json`).
 - **Job record PDF** with milestones, photos, hashes, variation orders, payments and the full audit trail.
 - **English, Bahasa Melayu and 中文** for the interface, texts, emails and the PDF; each person's choice is saved.
-- **Notifications**: client SMS or WhatsApp (Twilio) and email; contractor in-app list and push (FCM); daily reminders.
+- **Notifications**: client SMS or WhatsApp (Twilio) and email; contractor notification list (the mobile apps poll it); daily reminders.
 - **Plans**: Free (1 active job, 5 GB) and Solo (10 jobs, 50 GB, RM 49/month through Stripe).
 
-**Coming soon: Android and iOS apps.** Native apps for contractors are on the way, with an in-app camera that stamps time and GPS, an offline upload queue for sites with weak signal, and push notifications. They use the same API as the web app; clients keep using the link and never need to install anything.
+**Coming soon: Android and iOS apps.** Native apps for contractors are on the way, with an in-app camera that stamps time and GPS, an offline upload queue for sites with weak signal, and notifications. They use the same API as the web app; clients keep using the link and never need to install anything.
 
 The product spec is [SPEC.md](SPEC.md); what is done and what is left is tracked in [PROGRESS.md](PROGRESS.md).
 
@@ -50,7 +50,6 @@ All optional; without them the app logs instead of sending.
 | Service               | Keys in `.env`                                                                                            |
 | --------------------- | --------------------------------------------------------------------------------------------------------- |
 | Twilio SMS / WhatsApp | `SMS_DRIVER=twilio`, `TWILIO_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM`, `TWILIO_CHANNEL`                   |
-| Firebase push         | `FCM_CREDENTIALS` (path to the service-account JSON)                                                      |
 | Stripe billing        | `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_SOLO`; webhook at `/stripe/webhook` |
 | S3 storage            | `FILESYSTEM_DISK=s3` plus the `AWS_*` keys                                                                |
 | Redis queue           | `QUEUE_CONNECTION=redis`, run `php artisan horizon`; `HORIZON_ADMINS` for the dashboard                   |

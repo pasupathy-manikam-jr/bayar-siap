@@ -37,7 +37,31 @@ class ApiAccountTest extends TestCase
             ->assertJsonPath('data.0.title', 'Payment confirmed')
             ->assertJsonPath('data.0.unread', true)
             ->assertJsonPath('next_page', null);
+
+        // Polling must not mark anything read; the app does that explicitly.
+        $this->getJson('/api/v1/me')->assertJsonPath('unread_notifications', 1);
+        $this->postJson('/api/v1/notifications/read')->assertNoContent();
         $this->getJson('/api/v1/me')->assertJsonPath('unread_notifications', 0);
+    }
+
+    public function test_polling_with_since_returns_only_newer_notifications(): void
+    {
+        $user = User::factory()->create();
+        $user->notify(new ContractorAlert('Payment confirmed', 'Old', [], 'https://example.com/jobs/1', 1));
+        $this->travel(5)->minutes();
+        $checkpoint = now()->toIso8601String();
+        $this->travel(1)->minutes();
+        $user->notify(new ContractorAlert('Payment disputed', 'New', [], 'https://example.com/jobs/1', 1));
+        Sanctum::actingAs($user);
+
+        $this->getJson('/api/v1/notifications?since='.urlencode($checkpoint))->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Payment disputed')
+            ->assertJsonPath('unread_count', 2);
+
+        $id = $user->notifications()->latest()->value('id');
+        $this->postJson('/api/v1/notifications/read', ['ids' => [$id]])->assertNoContent();
+        $this->assertSame(1, $user->unreadNotifications()->count());
     }
 
     public function test_billing_url_reports_when_stripe_is_not_set_up(): void

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Client;
+use App\Models\Comment;
 use App\Models\Job;
+use App\Models\VariationOrder;
 use App\Services\JobFlow;
 use App\Services\JobRecord;
 use Illuminate\Database\Eloquent\Collection;
@@ -169,8 +171,14 @@ class JobController extends Controller
     /** @return array<string, mixed> */
     private function detail(Job $job): array
     {
-        $job->load(['client', 'milestones' => fn ($q) => $q->withCount('proofs')->with('openRequest'), 'variationOrders', 'payments']);
+        $job->load(['client', 'milestones' => fn ($q) => $q->withCount('proofs')->with('openRequest'), 'variationOrders.comments.author', 'payments']);
+        $detail = $job->toArray();
+        // Comment threads in the same shape as the web (no raw author records, e.g. the client's phone).
+        $detail['variation_orders'] = $job->variationOrders->map(fn (VariationOrder $vo) => [
+            ...$vo->withoutRelations()->toArray(),
+            'comments' => $vo->comments->sortBy('id')->values()->map(fn (Comment $c) => $c->toThread()),
+        ])->all();
 
-        return $job->toArray() + ['summary' => $job->summary(), 'share_url' => $job->status === 'draft' ? null : $job->shareUrl()];
+        return $detail + ['summary' => $job->summary(), 'share_url' => $job->status === 'draft' ? null : $job->shareUrl()];
     }
 }
