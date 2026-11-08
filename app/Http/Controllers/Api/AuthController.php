@@ -56,7 +56,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $data['email'])->first();
         if (! $user || ! Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
+            throw ValidationException::withMessages(['email' => __('These credentials do not match our records.')]);
         }
 
         return $this->tokenResponse($user, $data['device_name'] ?? 'app');

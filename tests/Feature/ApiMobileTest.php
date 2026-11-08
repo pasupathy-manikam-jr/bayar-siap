@@ -72,6 +72,9 @@ class ApiMobileTest extends TestCase
         $this->owner->forceFill(['locale' => null])->save();
         $this->postJson('/api/v1/jobs', [], ['Accept-Language' => 'zh-CN'])->assertUnprocessable()
             ->assertJsonPath('errors.title.0', __('validation.required', ['attribute' => 'title'], 'zh'));
+
+        $this->postJson('/api/v1/auth/login', ['email' => 'nobody@example.com', 'password' => 'wrong'], ['Accept-Language' => 'ms'])
+            ->assertUnprocessable()->assertJsonPath('errors.email.0', 'Butiran log masuk ini tidak sepadan dengan rekod kami.');
     }
 
     public function test_offline_retries_of_a_proof_never_create_a_duplicate(): void

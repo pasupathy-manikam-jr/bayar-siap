@@ -706,5 +706,6 @@
     "Your plan allows :limit active job(s). Upgrade to add more.": "您的配套最多允许 :limit 个进行中的工程。升级以添加更多。",
     "Your work is saved up to the last step. Try again in a minute.": "您的进度已保存到上一步。请一分钟后重试。",
     "You’re on the Solo plan. Thank you!": "您正在使用 Solo 配套。谢谢！",
-    "“:job” is active. You can start the first milestone.": "“:job”已进行中。您可以开始第一个阶段。"
+    "“:job” is active. You can start the first milestone.": "“:job”已进行中。您可以开始第一个阶段。",
+    "These credentials do not match our records.": "这些凭据与我们的记录不匹配。"
 }
